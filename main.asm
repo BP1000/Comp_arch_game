@@ -175,4 +175,106 @@ check_done:
 	ret
 CheckGuess ENDP
 
+; Displays the current game status
+DisplayGame PROC
+	mov edx, OFFSET attemptsMSG
+	call WriteString
+	mov eax, attempts
+	call WriteDec
+	call Crlf
+	call Crlf
+	ret
+DisplayGame ENDP
+
+GetUserGuess PROC
+	mov edx, OFFSET prompt1
+	call WriteString
+	call ReadInt
+	mov guess1, eax
+	mov edx, OFFSET prompt2
+	call WriteString
+	call ReadInt
+	mov guess2, eax
+	ret
+GetUserGuess ENDP
+
+;determine if both guesses are correct 
+CheckWinCondition PROC
+	mov eax, guess1
+	cmp eax, num1
+	jne not_won
+	mov eax, guess2
+	cmp eax, num2
+	jne not_won
+	mov gameWon, 1
+	mov al, 0
+	ret
+not_won:
+	mov al, 0
+	ret
+CheckWinCondition ENDP
+
+; Shows game over message
+DisplayGameOver PROC
+	mov edx, OFFSET gameOverMSG
+	call WriteString
+	mov eax, num1
+	call WriteDec
+	mov edx, OFFSET ", "
+	call WriteString
+	mov eax, num2
+	call WriteDec
+	call Crlf
+	ret 
+DisplayGameOver ENDP
+
+PlayGame PROC
+	call InitializeGame
+game_loop:
+	mov eax, attempts
+	cmp eax, MAX_ATTEMPTS
+	jge game_over
+	cmp gameWon, 1
+	je game_won
+	call DisplayGameStatus
+	call GetUserGuess
+	mov eax, guess1
+	mov ebx, num1
+	call CheckGuess
+	mov eax, guess2
+	mov ebx, num2
+	call CheckGuess
+	call CheckWinCondition
+	jne not_won_yet
+	jmp game_loop
+not_won_yet:
+	inc attempts
+	call Crlf
+	jmp game_loop
+game_won:
+	mov edx, OFFSET correctMSG
+	call WriteString
+	call Crlf
+	jmp	play_again_prompt
+game_over:
+	call DisplayGameOver
+play_again_prompt:
+	call Crlf
+	mov edx, OFFSET playAgainMSG
+	call WriteString
+	call ReadInt
+	cmp eax, 1
+	je play_again
+	ret
+play_again:
+	call Clrscr
+	call PlayGame
+	ret
+PlayGame ENDP
+
+
+
+
+
+
 
