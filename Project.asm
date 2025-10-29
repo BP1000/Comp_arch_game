@@ -75,8 +75,22 @@ main PROC
     add eax, MIN_NUM
     mov num2, eax
 
-    ;build loop for user to make guesses
+    ;get first guess
+    mov edx, OFFSET prompt1
+    call WriteString
+    call ReadInt
+    mov guess1, eax
+
+    ;get second guess
+    mov edx, OFFSET prompt2
+    call WriteString
+    call ReadInt
+    mov guess2, eax
+
+
+
     ;compare guesses to randomly generated nums
+    ;tell user if their guess is too high or low or right
 
 	INVOKE ExitProcess
 main ENDP
