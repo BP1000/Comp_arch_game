@@ -57,8 +57,26 @@ main PROC
 	call Crlf
 	call Crlf
 
+    call Randomize ;make sure number is random -ch.5
 
+    ;get first random number
+    mov eax, MAX_NUM
+    sub eax, MIN_NUM
+    inc eax
+    call RandomRange
+    add eax, MIN_NUM
+    mov num1, eax
 
+    ;get second random number
+    mov eax, MAX_NUM
+    sub eax, MIN_NUM
+    inc eax
+    call RandomRange
+    add eax, MIN_NUM
+    mov num2, eax
+
+    ;build loop for user to make guesses
+    ;compare guesses to randomly generated nums
 
 	INVOKE ExitProcess
 main ENDP
