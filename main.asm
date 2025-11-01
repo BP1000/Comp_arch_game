@@ -9,6 +9,7 @@ INCLUDE Irvine32.inc
 MAX_ATTEMPTS = 100 ;maximum number of user attempts
 MIN_NUM = 1 ;minimum value of a number
 MAX_NUM = 5000 ;maximum value of a number
+currentMax DWORD ? ;variable for difficuly
 num1 DWORD ? ;stores the value of the first number
 num2 DWORD ? ;stores the value of the second number
 guess1 DWORD ? ;stores the users most recent guess for the first number
@@ -27,6 +28,7 @@ tooLowMSG BYTE "Too low!", 0
 attemptsMSG BYTE "Attempts: ", 0
 gameOverMSG BYTE "Game Over! the numbers were: ", 0
 playAgainMSG BYTE "Play again? (1=Yes, 0=No): ", 0
+difficultyMSG BYTE "Choose difficulty (1=Easy, 2=Medium, 3=Hard): ", 0
 
 ;Color Constants
 DARK_BLUE = 1
@@ -41,7 +43,7 @@ WHITE_ON_BLACK = 15
 .code
 ;generate a random number between MIN_NUM and MAX_NUM
 GenerateRandomNumber PROC
-	mov eax, MAX_NUM
+	mov eax, currentMax
 	sub eax, MIN_NUM
 	inc eax
 	call RandomRange
@@ -229,6 +231,32 @@ DisplayGameOver PROC
 DisplayGameOver ENDP
 
 PlayGame PROC
+
+	;difficulty logic
+    mov edx, OFFSET difficultyPrompt
+    call WriteString
+    call ReadInt
+    cmp eax, 1
+    je easy
+    cmp eax, 2
+    je medium
+    cmp eax, 3
+    je hard
+    jmp default_difficulty
+
+easy:
+    mov currentMax, 1000
+    jmp continue_game
+medium:
+    mov currentMax, 2500
+    jmp continue_game
+hard:
+    mov currentMax, 5000
+    jmp continue_game
+default_difficulty:
+    mov currentMax, 5000
+continue_game:
+
 	call InitializeGame
 game_loop:
 	mov eax, attempts
