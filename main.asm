@@ -68,7 +68,7 @@ CalculateColorHigh PROC
 	mov ebx, eax
 	mov eax, ebx
 	mov ecx, 100
-	mmul ecx,
+	mul ecx,
 	mov ecx, MAX_NUM
 	div ecx ;stores the how out oof range the guess is as a percentage
 
@@ -109,12 +109,13 @@ CalculateColorLow PROC
 	div ecx ;stores the how out of range the guess is as a percentage
 
 	cmp eax, 75
-	jg very_off_low
+	jg very_far_low
 	cmp eax, 50
 	jg far_low
 	cmp eax, 25
-	jg close_low
+	jg medium_low
 	jmp close_low
+
 
 very_far_low:
 	mov eax, DARK_BLUE
@@ -209,7 +210,7 @@ CheckWinCondition PROC
 	cmp eax, num2
 	jne not_won
 	mov gameWon, 1
-	mov al, 0
+	mov al, 1
 	ret
 not_won:
 	mov al, 0
@@ -233,7 +234,7 @@ DisplayGameOver ENDP
 PlayGame PROC
 
 	;difficulty logic
-    mov edx, OFFSET difficultyPrompt
+    mov edx, OFFSET difficultyMSG
     call WriteString
     call ReadInt
     cmp eax, 1
@@ -273,9 +274,9 @@ game_loop:
 	mov ebx, num2
 	call CheckGuess
 	call CheckWinCondition
-	jne not_won_yet
-	jmp game_loop
-not_won_yet:
+	cmp al, 1
+	je game_won
+	
 	inc attempts
 	call Crlf
 	jmp game_loop
