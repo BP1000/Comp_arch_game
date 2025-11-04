@@ -5,6 +5,7 @@
 INCLUDE Irvine32.inc
 
 
+
 .data
 MAX_ATTEMPTS = 100 ;maximum number of user attempts
 MIN_NUM = 1 ;minimum value of a number
@@ -50,7 +51,6 @@ GenerateRandomNumber PROC
 	add eax, MIN_NUM
 	ret
 GenerateRandomNumber ENDP
-
 ;set up the game with new random numbers
 InitializeGame PROC
 	call Randomize
@@ -62,15 +62,15 @@ InitializeGame PROC
 	mov gameWon, 0
 	ret
 InitializeGame ENDP
-
 ; determines the color for the "Too High" meessage based on the distance between the user guess and the actual value
 CalculateColorHigh PROC
 	mov ebx, eax
 	mov eax, ebx
 	mov ecx, 100
-	mul ecx,
+	imul ecx
 	mov ecx, MAX_NUM
-	div ecx ;stores the how out oof range the guess is as a percentage
+	xor edx, edx
+	div ecx ;stores the how out of range the guess is as a percentage
 
 	cmp eax, 75
 	jg very_off
@@ -104,8 +104,9 @@ CalculateColorLow PROC
 	mov ebx, eax
 	mov eax, ebx
 	mov ecx, 100
-	mul ecx
+	imul ecx
 	mov ecx, MAX_NUM
+	xor edx, edx
 	div ecx ;stores the how out of range the guess is as a percentage
 
 	cmp eax, 75
@@ -129,54 +130,70 @@ medium_low:
 close_low:
 	mov eax, WHITE_ON_BLACK
 	jmp done_color_low
-color_done_low:
+done_color_low:
 	ret
 CalculateColorLow ENDP
 
 CheckGuess PROC
-	cmp eax, ebx
-	je correct_guess
-	jg too_high_guess
-	mov edx, OFFSET tooLowMSG
-	push eax
-	push ebx
-	mov eax, ebx
-	sub eax, [esp + 4]
-	call CalculateColorLow
-	call SetTextColor
-	pop ebx
-	pop eax
-	call WriteString
-	call Crlf
-	mov eax, WHITE_ON_BLACK
-	call SetTextColor
-	jmp check_done
+    ; EAX = guess
+    ; EBX = actual
+    cmp eax, ebx
+    je correct_guess
+    jg too_high_guess
+
+too_low_guess:
+    mov edx, OFFSET tooLowMSG
+    mov esi, eax          ; guess
+    mov edi, ebx          ; actual
+
+    mov eax, edi
+    sub eax, esi
+    jns diff_ok_low
+    neg eax
+diff_ok_low:
+    push edx              ; save message pointer
+    call CalculateColorLow
+    call SetTextColor
+    pop edx               ; restore message pointer for WriteString
+    call WriteString
+    call Crlf
+    mov eax, WHITE_ON_BLACK
+    call SetTextColor
+    jmp check_done
 
 too_high_guess:
-	mov edx, OFFSET tooHighMSG
-	push eax
-	push ebx
-	sub eax, ebx
-	call CalculateColorHigh
-	call SetTextColor
-	pop ebx
-	pop eax
-	call WriteString
-	call Crlf
-	mov eax, WHITE_ON_BLACK
-	call SetTextColor
-	jmp check_done
+    mov edx, OFFSET tooHighMSG
+    mov esi, eax          ; guess
+    mov edi, ebx          ; actual
+
+    mov eax, esi
+    sub eax, edi
+    jns diff_ok_high
+    neg eax
+diff_ok_high:
+    push edx
+    call CalculateColorHigh
+    call SetTextColor
+    pop edx
+    call WriteString
+    call Crlf
+    mov eax, WHITE_ON_BLACK
+    call SetTextColor
+    jmp check_done
+
 correct_guess:
-	mov edx, OFFSET correctMSG
-	mov eax, GREEN_ON_BLACK
-	call SetTextColor
-	call WriteString
-	call Crlf
-	mov eax, WHITE_ON_BLACK
-	call SetTextColor
+    mov edx, OFFSET correctMSG
+    mov eax, GREEN_ON_BLACK
+    call SetTextColor
+    call WriteString
+    call Crlf
+    mov eax, WHITE_ON_BLACK
+    call SetTextColor
+
 check_done:
-	ret
+    ret
 CheckGuess ENDP
+
 
 ; Displays the current game status
 DisplayGame PROC
@@ -265,7 +282,7 @@ game_loop:
 	jge game_over
 	cmp gameWon, 1
 	je game_won
-	call DisplayGameStatus
+	call DisplayGame
 	call GetUserGuess
 	mov eax, guess1
 	mov ebx, num1
@@ -300,6 +317,31 @@ play_again:
 	call PlayGame
 	ret
 PlayGame ENDP
+
+main PROC
+    call Clrscr                      ; Clear the screen
+    mov  eax, WHITE_ON_BLACK
+    call SetTextColor
+
+    ; Display welcome and instructions
+    mov  edx, OFFSET welcomeMSG
+    call WriteString
+    call Crlf
+    call Crlf
+
+    mov  edx, OFFSET instructions
+    call WriteString
+    call Crlf
+    call Crlf
+
+    ; Start the main game
+    call PlayGame
+
+    ; Exit program
+    exit
+main ENDP
+
+END main
 
 
 

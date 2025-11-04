@@ -31,6 +31,7 @@
       <FileType>Document</FileType>
       <IncludePaths Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\irvine</IncludePaths>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <IncludePaths Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\irvine</IncludePaths>
     </MASM>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -117,7 +118,8 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\irvine</AdditionalLibraryDirectories>
-      <EntryPointSymbol>main</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
       <NoEntryPoint>false</NoEntryPoint>
       <AdditionalDependencies>C:\irvine\Irvine32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -148,7 +150,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\irvine</AdditionalLibraryDirectories>
+      <AdditionalDependencies>C:\Irvine;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <MASM>
+      <IncludePaths>C:\Irvine</IncludePaths>
+    </MASM>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
