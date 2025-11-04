@@ -265,7 +265,7 @@ game_loop:
 	jge game_over
 	cmp gameWon, 1
 	je game_won
-	call DisplayGameStatus
+	call DisplayGame
 	call GetUserGuess
 	mov eax, guess1
 	mov ebx, num1
