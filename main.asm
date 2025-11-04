@@ -67,7 +67,7 @@ CalculateColorHigh PROC
 	mov ebx, eax
 	mov eax, ebx
 	mov ecx, 100
-	imul ecx
+	mul ecx,
 	mov ecx, MAX_NUM
 	xor edx, edx
 	div ecx ;stores the how out of range the guess is as a percentage
@@ -135,52 +135,38 @@ done_color_low:
 CalculateColorLow ENDP
 
 CheckGuess PROC
-    ; EAX = guess
-    ; EBX = actual
-    cmp eax, ebx
-    je correct_guess
-    jg too_high_guess
-
-too_low_guess:
-    mov edx, OFFSET tooLowMSG
-    mov esi, eax          ; guess
-    mov edi, ebx          ; actual
-
-    mov eax, edi
-    sub eax, esi
-    jns diff_ok_low
-    neg eax
-diff_ok_low:
-    push edx              ; save message pointer
-    call CalculateColorLow
-    call SetTextColor
-    pop edx               ; restore message pointer for WriteString
-    call WriteString
-    call Crlf
-    mov eax, WHITE_ON_BLACK
-    call SetTextColor
-    jmp check_done
+	cmp eax, ebx
+	je correct_guess
+	jg too_high_guess
+	mov edx, OFFSET tooLowMSG
+	push eax
+	push ebx
+	mov eax, ebx
+	sub eax, [esp + 4]
+	call CalculateColorLow
+	call SetTextColor
+	pop ebx
+	pop eax
+	call WriteString
+	call Crlf
+	mov eax, WHITE_ON_BLACK
+	call SetTextColor
+	jmp check_done
 
 too_high_guess:
-    mov edx, OFFSET tooHighMSG
-    mov esi, eax          ; guess
-    mov edi, ebx          ; actual
-
-    mov eax, esi
-    sub eax, edi
-    jns diff_ok_high
-    neg eax
-diff_ok_high:
-    push edx
-    call CalculateColorHigh
-    call SetTextColor
-    pop edx
-    call WriteString
-    call Crlf
-    mov eax, WHITE_ON_BLACK
-    call SetTextColor
-    jmp check_done
-
+	mov edx, OFFSET tooHighMSG
+	push eax
+	push ebx
+	sub eax, ebx
+	call CalculateColorHigh
+	call SetTextColor
+	pop ebx
+	pop eax
+	call WriteString
+	call Crlf
+	mov eax, WHITE_ON_BLACK
+	call SetTextColor
+	jmp check_done
 correct_guess:
     mov edx, OFFSET correctMSG
     mov eax, GREEN_ON_BLACK
@@ -293,7 +279,7 @@ game_loop:
 	call CheckWinCondition
 	cmp al, 1
 	je game_won
-	
+
 	inc attempts
 	call Crlf
 	jmp game_loop
