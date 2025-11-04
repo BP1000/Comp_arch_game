@@ -68,7 +68,7 @@ CalculateColorHigh PROC
 	mov ebx, eax
 	mov eax, ebx
 	mov ecx, 100
-	mul ecx,
+	mul ecx
 	mov ecx, MAX_NUM
 	div ecx ;stores the how out oof range the guess is as a percentage
 
@@ -129,7 +129,7 @@ medium_low:
 close_low:
 	mov eax, WHITE_ON_BLACK
 	jmp done_color_low
-color_done_low:
+done_color_low:
 	ret
 CalculateColorLow ENDP
 
@@ -144,12 +144,12 @@ CheckGuess PROC
 	sub eax, [esp + 4]
 	call CalculateColorLow
 	call SetTextColor
-	pop ebx
-	pop eax
 	call WriteString
 	call Crlf
 	mov eax, WHITE_ON_BLACK
 	call SetTextColor
+	pop ebx
+	pop eax
 	jmp check_done
 
 too_high_guess:
@@ -159,12 +159,12 @@ too_high_guess:
 	sub eax, ebx
 	call CalculateColorHigh
 	call SetTextColor
-	pop ebx
-	pop eax
 	call WriteString
 	call Crlf
 	mov eax, WHITE_ON_BLACK
 	call SetTextColor
+	pop ebx
+	pop eax
 	jmp check_done
 correct_guess:
 	mov edx, OFFSET correctMSG
@@ -276,7 +276,7 @@ game_loop:
 	call CheckWinCondition
 	cmp al, 1
 	je game_won
-	
+
 	inc attempts
 	call Crlf
 	jmp game_loop
