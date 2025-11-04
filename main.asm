@@ -82,15 +82,14 @@ CalculateColorHigh PROC
 
 ; set colors for very off guess
 very_off:
-	mov eax, DARK_RED
+	mov eax, 4
 	jmp done_color_high
-
 ; set color for off guess
 off:
-	mov eax, RED_ON_BLACK
+	mov eax, 12
 	jmp done_color_high
 close:
-	mov eax, INTENSE_RED
+	mov eax, 13
 	jmp done_color_high
 really_close:
 	mov eax, WHITE_ON_BLACK
@@ -118,13 +117,13 @@ CalculateColorLow PROC
 
 
 very_far_low:
-	mov eax, DARK_BLUE
+	mov eax, 1
 	jmp done_color_low
 far_low:
-	mov eax, BLUE_ON_BLACK
+	mov eax, 9
 	jmp done_color_low
 medium_low:
-	mov eax, INTENSE_BLUE
+	mov eax, 11
 	jmp done_color_low
 close_low:
 	mov eax, WHITE_ON_BLACK
