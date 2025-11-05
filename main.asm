@@ -67,7 +67,7 @@ CalculateColorHigh PROC
 	mov ebx, eax
 	mov eax, ebx
 	mov ecx, 100
-	mul ecx,
+	mul ecx
 	mov ecx, MAX_NUM
 	xor edx, edx
 	div ecx ;stores the how out of range the guess is as a percentage
